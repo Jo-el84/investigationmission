@@ -24,67 +24,100 @@ function renderMissions(missions) {
     const savedProgress = JSON.parse(localStorage.getItem('investigation_progress')) || {};
 
     missions.forEach(mission => {
-        // Mescla o estado salvo com o JSON
-        const missionState = savedProgress[mission.id] || mission;
+        const missionState = savedProgress[mission.id] || { 
+            ...mission, 
+            started: false, 
+            objectives: mission.objectives.map((obj, index) => ({ id: `obj-${index}`, text: obj, completed: false }))
+        };
 
         const card = document.createElement('div');
-        card.className = 'mission-card';
+        card.className = `mission-card ${missionState.started ? 'active-mission' : ''}`;
         
-        let objectivesHtml = missionState.objectives.map(obj => `
-            <li class="objective-item ${obj.completed ? 'completed' : ''}" onclick="toggleObjective('${mission.id}', '${obj.id}')">
-                <span class="checkbox">${obj.completed ? '☑' : '☐'}</span> 
-                <span>${obj.text}</span>
-            </li>
-        `).join('');
+        let contentHtml = '';
 
-        const allCompleted = missionState.objectives.every(obj => obj.completed);
+        if (!missionState.started) {
+            // Estado Inicial: Botão para iniciar a investigação
+            contentHtml = `
+                <p class="mission-summary">${missionState.summary}</p>
+                <button class="btn-launch" onclick="startMission('${mission.id}')">
+                    Iniciar Missão
+                </button>
+            `;
+        } else {
+            // Estado Avançado: Mostra os objetivos interativos da investigação
+            let objectivesHtml = missionState.objectives.map(obj => `
+                <li class="objective-item ${obj.completed ? 'completed' : ''}" onclick="toggleObjective('${mission.id}', '${obj.id}')">
+                    <span class="checkbox">${obj.completed ? '☑' : '☐'}</span> 
+                    <span>${obj.text}</span>
+                </li>
+            `).join('');
+
+            const allCompleted = missionState.objectives.every(obj => obj.completed);
+
+            contentHtml = `
+                <p class="mission-summary">${missionState.summary}</p>
+                <div style="font-size: 0.85rem; color: #e8b4b8; margin: 10px 0 5px 0;">Etapas da Investigação (Toque para concluir):</div>
+                <ul class="objectives-list">
+                    ${objectivesHtml}
+                </ul>
+                <button class="btn-launch" ${!allCompleted ? 'disabled' : ''} onclick="completeMission('${missionState.title}', '${missionState.reward}', '${mission.id}')">
+                    ${allCompleted ? 'Concluir Investigação' : 'Investigação em Andamento...'}
+                </button>
+            `;
+        }
 
         card.innerHTML = `
             <div class="mission-header">
-                <h2 class="mission-title">${mission.title}</h2>
-                <span class="badge">Dificuldade: ${mission.difficulty}</span>
+                <h2 class="mission-title">${missionState.title}</h2>
+                <span class="badge">Dificuldade: ${missionState.difficulty}</span>
             </div>
-            <p class="mission-summary">${mission.summary}</p>
-            <div style="font-size: 0.85rem; color: #888; margin-bottom: 5px;">Toque nos objetivos para investigar:</div>
-            <ul class="objectives-list">
-                ${objectivesHtml}
-            </ul>
-            <div class="mission-footer">
-                <button class="btn-launch" ${!allCompleted ? 'disabled' : ''} onclick="completeMission('${mission.title}', '${mission.reward}')">
-                    ${allCompleted ? 'Concluir Investigação' : 'Investigação em Andamento'}
-                </button>
-            </div>
+            ${contentHtml}
         `;
         
         grid.appendChild(card);
     });
 }
 
-function toggleObjective(missionId, objId) {
-    let savedProgress = JSON.parse(localStorage.getItem('investigation_progress')) || {};
-    
-    // Pega o estado atual ou busca do missions.json padrão (simulação rápida)
+function startMission(missionId) {
     fetch('data/missions.json')
         .then(res => res.json())
         .then(data => {
-            let mission = savedProgress[missionId];
-            if (!mission) {
-                mission = data.missions.find(m => m.id === missionId);
-            }
+            let savedProgress = JSON.parse(localStorage.getItem('investigation_progress')) || {};
+            let mission = data.missions.find(m => m.id === missionId);
 
-            mission.objectives = mission.objectives.map(obj => {
-                if (obj.id === objId) {
-                    return { ...obj, completed: !obj.completed };
-                }
-                return obj;
-            });
+            savedProgress[missionId] = {
+                ...mission,
+                started: true,
+                objectives: mission.objectives.map((text, index) => ({ id: `obj-${index}`, text: text, completed: false }))
+            };
 
-            savedProgress[missionId] = mission;
             localStorage.setItem('investigation_progress', JSON.stringify(savedProgress));
             renderMissions(data.missions);
         });
 }
 
-function completeMission(title, reward) {
-    alert(`Parabéns! Você concluiu com sucesso a investigação: "${title}".\nRecompensa desbloqueada: ${reward}`);
+function toggleObjective(missionId, objId) {
+    let savedProgress = JSON.parse(localStorage.getItem('investigation_progress')) || {};
+    let mission = savedProgress[missionId];
+
+    if (mission) {
+        mission.objectives = mission.objectives.map(obj => {
+            if (obj.id === objId) {
+                return { ...obj, completed: !obj.completed };
+            }
+            return obj;
+        });
+
+        savedProgress[missionId] = mission;
+        localStorage.setItem('investigation_progress', JSON.stringify(savedProgress));
+        
+        fetch('data/missions.json')
+            .then(res => res.json())
+            .then(data => renderMissions(data.missions));
+    }
+}
+
+function completeMission(title, reward, missionId) {
+    alert(`Parabéns! Investigação concluída: "${title}"\nRecompensa obtida: ${reward}`);
+    // Aqui você pode resetar ou marcar como finalizada se desejar
 }
