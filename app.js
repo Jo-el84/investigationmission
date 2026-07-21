@@ -24,7 +24,6 @@ function renderMissionHub(missions) {
     const savedProgress = JSON.parse(localStorage.getItem('investigation_progress')) || {};
 
     missions.forEach(mission => {
-        // Se a missão não foi iniciada ou não tem etapa salva, começa no passo "inicio"
         let currentStepId = savedProgress[mission.id] || "inicio";
         let stepData = mission.steps[currentStepId];
 
@@ -34,7 +33,6 @@ function renderMissionHub(missions) {
         let contentHtml = '';
 
         if (currentStepId === 'inicio') {
-            // Tela inicial da missão
             contentHtml = `
                 <p class="mission-summary">${mission.steps.inicio.summary}</p>
                 <button class="btn-launch" onclick="advanceStep('${mission.id}', 'inicio')">
@@ -42,15 +40,13 @@ function renderMissionHub(missions) {
                 </button>
             `;
         } else if (stepData.isFinal) {
-            // Fase final / Mistério resolvido
             contentHtml = `
                 <p class="mission-summary" style="color: #f3d6d8; font-weight: bold;">${stepData.summary}</p>
-                <button class="btn-launch" onclick="resetMission('${mission.id}')" style="background-color: #4CAF50; color: #fff;">
+                <button class="btn-launch" onclick="resetMission('${mission.id}')" style="background-color: #e8b4b8; color: #121212;">
                     Reiniciar Investigação
                 </button>
             `;
         } else {
-            // Passos intermediários (exibe o novo resumo e as novas opções)
             let optionsHtml = stepData.options.map(opt => `
                 <button class="btn-option" onclick="advanceStep('${mission.id}', '${opt.nextStep}')">
                     🔍 ${opt.text}
@@ -85,8 +81,6 @@ function advanceStep(missionId, nextStepId) {
     let savedProgress = JSON.parse(localStorage.getItem('investigation_progress')) || {};
     savedProgress[missionId] = nextStepId;
     localStorage.setItem('investigation_progress', JSON.stringify(savedProgress));
-    
-    // Recarrega os dados para atualizar a tela
     loadMissions();
 }
 
@@ -94,6 +88,5 @@ function resetMission(missionId) {
     let savedProgress = JSON.parse(localStorage.getItem('investigation_progress')) || {};
     delete savedProgress[missionId];
     localStorage.setItem('investigation_progress', JSON.stringify(savedProgress));
-    
     loadMissions();
 }
