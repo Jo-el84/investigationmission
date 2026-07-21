@@ -1,37 +1,45 @@
-{
-  "missions": [
-    {
-      "id": "missao-01",
-      "title": "O Desaparecimento do Arqueólogo",
-      "difficulty": "Médio",
-      "reward": "Acesso ao Arquivo Secreto #02",
-      "steps": {
-        "inicio": {
-          "summary": "Um renomado arqueólogo sumiu após escavar uma tumba misteriosa. Por onde você quer começar a investigação?",
-          "options": [
-            { "text": "Inspecionar o acampamento abandonado", "nextStep": "passo_acampamento" },
-            { "text": "Analisar o laboratório de DNA", "nextStep": "passo_laboratorio" }
-          ]
-        },
-        "passo_acampamento": {
-          "summary": "No acampamento, você encontra a tenda revirada e uma maleta trancada com senha. O que fazer?",
-          "options": [
-            { "text": "Forçar a fechadura da maleta", "nextStep": "fase_final" },
-            { "text": "Procurar pistas nos papéis espalhados", "nextStep": "fase_final" }
-          ]
-        },
-        "passo_laboratorio": {
-          "summary": "No laboratório, há um tubo de ensaio com material genético desconhecido e um computador ligado.",
-          "options": [
-            { "text": "Verificar os registros do computador", "nextStep": "fase_final" }
-          ]
-        },
-        "fase_final": {
-          "summary": "CASO RESOLVIDO: Você encontrou as pistas cruciais e desvendou o paradeiro do arqueólogo!",
-          "isFinal": true,
-          "options": []
+const GAME_DATA = {
+    missions: [
+        {
+            id: "missao-01",
+            title: "O Mistério do Rio",
+            difficulty: "Médio",
+            reward: "Insígnia de Detetive Sênior",
+            evidenceRequired: 2, // Quantas pistas reais precisa ter para prender sem ser processado
+            steps: {
+                "inicio": {
+                    summary: "Foi encontrado um homem caído na beira do rio. O local está isolado pela polícia local.",
+                    image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600",
+                    options: [
+                        { text: "1. Analisar corpo", nextStep: "corpo" },
+                        { text: "2. Analisar cenário", nextStep: "cenario" },
+                        { text: "3. Analisar testemunhas", nextStep: "testemunhas" }
+                    ]
+                },
+                "corpo": {
+                    summary: "Você examina o corpo e encontra um bilhete rasgado no bolso da vítima com a assinatura do suspeito.",
+                    image: "https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?w=600",
+                    isEvidence: true, // Conta como pista válida para o processo
+                    evidenceName: "Bilhete Assinado",
+                    options: [
+                        { text: "Voltar a investigar o cenário", nextStep: "cenario" },
+                        { text: "Questionar as testemunhas", nextStep: "testemunhas" },
+                        { text: "Tentar prender o suspeito agora", nextStep: "acusacao_prematura" }
+                    ]
+                },
+                "cenario": {
+                    summary: "Pegadas de lama levam direto para um armazém abandonado nas proximidades.",
+                    image: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=600",
+                    isEvidence: true,
+                    evidenceName: "Pegadas de Lama no Armazém",
+                    options: [
+                        { text: "Inspecionar o corpo novamente", nextStep: "corpo" },
+                        { text: "Verificar testemunhas locais", nextStep: "testemunhas" },
+                        { text: "Ir direto fazer a acusação", nextStep: "verificar_acusacao" }
+                    ]
+                },
+                "testemunhas":5 // (Continuando a estrutura de passos...)
+            }
         }
-      }
-    }
-  ]
-}
+    ]
+};
