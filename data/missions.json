@@ -6,10 +6,10 @@
       "status": "available",
       "difficulty": "Médio",
       "summary": "Um renomado arqueólogo sumiu após escavar uma tumba misteriosa. Encontre pistas no diário dele.",
-      "objectives":[
-        { "id": "obj-1", "text": "Inspecionar o acampamento", "completed": false },
-        { "id": "obj-2", "text": "Analisar o fragmento de DNA", "completed": false },
-        { "id": "obj-3", "text": "Decodificar a mensagem de rádio", "completed": false }
+      "objectives": [
+        "Inspecionar o acampamento",
+        "Analisar o fragmento de DNA",
+        "Decodificar a mensagem de rádio"
       ],
       "reward": "Acesso ao Arquivo Secreto #02"
     }
