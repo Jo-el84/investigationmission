@@ -1,0 +1,17 @@
+{
+  "missions": [
+    {
+      "id": "missao-01",
+      "title": "O Desaparecimento do Arqueólogo",
+      "status": "available",
+      "difficulty": "Médio",
+      "summary": "Um renomado arqueólogo sumiu após escavar uma tumba misteriosa. Encontre pistas no diário dele.",
+      "objectives": [
+        "Inspecionar o acampamento",
+        "Analisar o fragmento de DNA",
+        "Decodificar a mensagem de rádio"
+      ],
+      "reward": "Acesso ao Arquivo Secreto #02"
+    }
+  ]
+}
