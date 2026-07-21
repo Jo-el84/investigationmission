@@ -1,0 +1,15 @@
+{
+  "name": "Central de Investigação",
+  "short_name": "Missões",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#e8b4b8",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
