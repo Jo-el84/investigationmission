@@ -1,92 +1,132 @@
 document.addEventListener("DOMContentLoaded", () => {
-    loadMissions();
+    loadGame();
 });
 
-async function loadMissions() {
-    try {
-        const response = await fetch('data/missions.json');
-        if (!response.ok) throw new Error("Erro ao carregar o banco de dados.");
-        
-        const data = await response.json();
-        renderMissionHub(data.missions);
-    } catch (error) {
-        console.error(error);
-        document.getElementById('missionGrid').innerHTML = `
-            <p style="color: #e8b4b8; text-align: center;">Erro ao carregar as missões do sistema.</p>
-        `;
-    }
+function loadGame() {
+    // Carrega a primeira missão do banco de dados local
+    const mission = GAME_DATA.missions[0];
+    let savedState = JSON.parse(localStorage.getItem('carmen_progress')) || {
+        currentStep: "inicio",
+        collectedEvidence: []
+    };
+
+    renderGame(mission, savedState);
 }
 
-function renderMissionHub(missions) {
+function renderGame(mission, state) {
     const grid = document.getElementById('missionGrid');
     grid.innerHTML = '';
 
-    const savedProgress = JSON.parse(localStorage.getItem('investigation_progress')) || {};
+    const currentStepData = mission.steps[state.currentStep] || mission.steps["inicio"];
 
-    missions.forEach(mission => {
-        let currentStepId = savedProgress[mission.id] || "inicio";
-        let stepData = mission.steps[currentStepId];
+    let card = document.createElement('div');
+    card.className = 'mission-card';
 
-        const card = document.createElement('div');
-        card.className = `mission-card ${currentStepId !== 'inicio' ? 'active-mission' : ''}`;
+    // Bloco de Imagem (Estilo Carmen Sandiego)
+    let imageHtml = currentStepData.image ? `
+        <div class="mission-image-container" style="margin-bottom: 15px;">
+            <img src="${currentStepData.image}" alt="Cena do Crime" style="width: 100%; height: 180px; object-fit: cover; border-radius: 4px; border: 1px solid #444;">
+        </div>
+    ` : '';
 
-        let contentHtml = '';
+    // Se a etapa atual coletar uma prova, adiciona automaticamente ao inventário
+    if (currentStepData.isEvidence && !state.collectedEvidence.includes(currentStepData.evidenceName)) {
+        state.collectedEvidence.push(currentStepData.evidenceName);
+        localStorage.setItem('carmen_progress', JSON.stringify(state));
+    }
 
-        if (currentStepId === 'inicio') {
-            contentHtml = `
-                <p class="mission-summary">${mission.steps.inicio.summary}</p>
-                <button class="btn-launch" onclick="advanceStep('${mission.id}', 'inicio')">
-                    Iniciar Investigação
-                </button>
-            `;
-        } else if (stepData.isFinal) {
-            contentHtml = `
-                <p class="mission-summary" style="color: #f3d6d8; font-weight: bold;">${stepData.summary}</p>
-                <button class="btn-launch" onclick="resetMission('${mission.id}')" style="background-color: #e8b4b8; color: #121212;">
-                    Reiniciar Investigação
-                </button>
-            `;
-        } else {
-            let optionsHtml = stepData.options.map(opt => `
-                <button class="btn-option" onclick="advanceStep('${mission.id}', '${opt.nextStep}')">
-                    🔍 ${opt.text}
-                </button>
-            `).join('');
-
-            contentHtml = `
-                <p class="mission-summary">${stepData.summary}</p>
-                <div style="font-size: 0.85rem; color: #e8b4b8; margin: 15px 0 10px 0;">Escolha sua próxima ação:</div>
-                <div class="options-container">
-                    ${optionsHtml}
-                </div>
-                <button class="btn-reset-step" onclick="resetMission('${mission.id}')">
-                    Reiniciar Caso
-                </button>
-            `;
-        }
-
-        card.innerHTML = `
-            <div class="mission-header">
-                <h2 class="mission-title">${mission.title}</h2>
-                <span class="badge">Dificuldade: ${mission.difficulty}</span>
+    let optionsHtml = '';
+    
+    if (currentStepData.isFinal) {
+        optionsHtml = `
+            <div style="background: #1a3a1a; padding: 15px; border-radius: 4px; border: 1px solid #4CAF50; margin-bottom: 15px;">
+                <p style="color: #4CAF50; font-weight: bold; margin: 0;">${currentStepData.summary}</p>
             </div>
-            ${contentHtml}
+            <button class="btn-launch" onclick="resetGame()" style="background-color: #e8b4b8; color: #121212;">
+                Jogar Novamente
+            </button>
         `;
+    } else if (currentStepData.isFailed) {
+        optionsHtml = `
+            <div style="background: #3a1a1a; padding: 15px; border-radius: 4px; border: 1px solid #f44336; margin-bottom: 15px;">
+                <p style="color: #f44336; font-weight: bold; margin: 0;">${currentStepData.summary}</p>
+            </div>
+            <button class="btn-launch" onclick="resetGame()" style="background-color: #f44336; color: #fff;">
+                Tentar Novamente (Afastado por Processo)
+            </button>
+        `;
+    } else {
+        // Renderiza as opções normais
+        optionsHtml = currentStepData.options.map(opt => `
+            <button class="btn-option" onclick="makeChoice('${opt.nextStep}')">
+                🔍 ${opt.text}
+            </button>
+        `).join('');
+
+        // Botão especial de "Julgamento / Acusação" para testar se tem provas suficientes
+        optionsHtml += `
+            <button class="btn-launch" onclick="checkAcquisition('${mission.evidenceRequired}')" style="margin-top: 15px; background-color: #d4af37; color: #121212;">
+                ⚖️ Fazer Prisão / Acusação Final (${state.collectedEvidence.length}/${mission.evidenceRequired} Provas)
+            </button>
+        `;
+    }
+
+    // Painel lateral de Provas Coletadas (Caderneta do Detetive)
+    let evidenceListHtml = state.collectedEvidence.length > 0 
+        ? state.collectedEvidence.map(ev => `<li style="font-size: 0.8rem; color: #e8b4b8;">✔ ${ev}</li>`).join('')
+        : `<span style="font-size: 0.8rem; color: #777;">Nenhuma pista forte coletada ainda.</span>`;
+
+    card.innerHTML = `
+        <div class="mission-header">
+            <h2 class="mission-title">${mission.title}</h2>
+            <span class="badge">Dificuldade: ${mission.difficulty}</span>
+        </div>
+        ${imageHtml}
+        <p class="mission-summary">${currentStepData.summary}</p>
         
-        grid.appendChild(card);
-    });
+        <div style="background: #181818; padding: 10px; border-radius: 4px; margin-bottom: 15px; border: 1px dashed #444;">
+            <div style="font-size: 0.85rem; color: #aaa; margin-bottom: 5px;">📁 Caderneta de Provas do Investigador:</div>
+            <ul style="margin: 0; padding-left: 15px;">${evidenceListHtml}</ul>
+        </div>
+
+        <div class="options-container">
+            ${optionsHtml}
+        </div>
+    `;
+
+    grid.appendChild(card);
 }
 
-function advanceStep(missionId, nextStepId) {
-    let savedProgress = JSON.parse(localStorage.getItem('investigation_progress')) || {};
-    savedProgress[missionId] = nextStepId;
-    localStorage.setItem('investigation_progress', JSON.stringify(savedProgress));
-    loadMissions();
+function makeChoice(nextStep) {
+    let state = JSON.parse(localStorage.getItem('carmen_progress')) || { collectedEvidence: [] };
+    state.currentStep = nextStep;
+    localStorage.setItem('carmen_progress', JSON.stringify(state));
+    loadGame();
 }
 
-function resetMission(missionId) {
-    let savedProgress = JSON.parse(localStorage.getItem('investigation_progress')) || {};
-    delete savedProgress[missionId];
-    localStorage.setItem('investigation_progress', JSON.stringify(savedProgress));
-    loadMissions();
+function checkAcquisition(requiredCount) {
+    let state = JSON.parse(localStorage.getItem('carmen_progress')) || { collectedEvidence: [] };
+    
+    const mission = GAME_DATA.missions[0];
+
+    if (state.collectedEvidence.length >= parseInt(requiredCount)) {
+        // Sucesso! Tem provas suficientes
+        mission.steps["resultado_sucesso"] = {
+            summary: "PARABÉNS! Com base nas provas recolhidas, o juiz emitiu o mandado. O infrator foi condenado e você foi promovido!",
+            isFinal: true
+        };
+        makeChoice("resultado_sucesso");
+    } else {
+        // Fracasso! Acusou cedo demais e foi processado por abuso de autoridade
+        mission.steps["resultado_falha"] = {
+            summary: "ERRO CRÍTICO! Você prendeu o suspeito sem provas suficientes. O advogado dele abriu um processo por abuso de autoridade, e você foi afastado das suas funções!",
+            isFailed: true
+        };
+        makeChoice("resultado_falha");
+    }
+}
+
+function resetGame() {
+    localStorage.removeItem('carmen_progress');
+    loadGame();
 }
