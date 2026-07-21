@@ -3,15 +3,60 @@
     {
       "id": "missao-01",
       "title": "O Desaparecimento do Arqueólogo",
-      "status": "available",
       "difficulty": "Médio",
-      "summary": "Um renomado arqueólogo sumiu após escavar uma tumba misteriosa. Encontre pistas no diário dele.",
-      "objectives": [
-        "Inspecionar o acampamento",
-        "Analisar o fragmento de DNA",
-        "Decodificar a mensagem de rádio"
-      ],
-      "reward": "Acesso ao Arquivo Secreto #02"
+      "reward": "Acesso ao Arquivo Secreto #02",
+      "steps": {
+        "inicio": {
+          "summary": "Um renomado arqueólogo sumiu após escavar uma tumba misteriosa. Por onde você quer começar a investigação?",
+          "options": [
+            { "text": "Inspecionar o acampamento abandonado", "nextStep": "passo_acampamento" },
+            { "text": "Analisar o laboratório de DNA", "nextStep": "passo_laboratorio" }
+          ]
+        },
+        "passo_acampamento": {
+          "summary": "No acampamento, você encontra a tenda revirada e uma maleta trancada com senha. O que fazer?",
+          "options": [
+            { "text": "Forçar a fechadura da maleta", "nextStep": "passo_maleta_forcada" },
+            { "text": "Procurar pistas nos papéis espalhados no chão", "nextStep": "passo_papeis" }
+          ]
+        },
+        "passo_laboratorio": {
+          "summary": "No laboratório, há um tubo de ensaio com material genético desconhecido e um computador ligado.",
+          "options": [
+            { "text": "Analisar o DNA no microscópio", "nextStep": "passo_dna_analisado" },
+            { "text": "Verificar os registros de acesso do computador", "nextStep": "passo_computador" }
+          ]
+        },
+        "passo_maleta_forcada": {
+          "summary": "A maleta continha apenas pertences pessoais e uma passagem de trem rasgada para a estação central.",
+          "options": [
+            { "text": "Ir direto para a Estação Central de Trem", "nextStep": "fase_final" }
+          ]
+        },
+        "passo_papeis": {
+          "summary": "Nos papéis, há uma carta borrada de tinta mencionando um encontro secreto na Estação Central.",
+          "options": [
+            { "text": "Seguir para a Estação Central", "nextStep": "fase_final" }
+          ]
+        },
+        "passo_dna_analisado": {
+          "summary": "O DNA pertence a uma criatura desconhecida ou a um animal silvestre da região, descartando pistas humanas.",
+          "options": [
+            { "text": "Voltar a atenção para o acampamento", "nextStep": "passo_acampamento" }
+          ]
+        },
+        "passo_computador": {
+          "summary": "O computador mostra um e-mail enviado há poucas horas combinando uma fuga pela Estação Central.",
+          "options": [
+            { "text": "Investigar a Estação Central", "nextStep": "fase_final" }
+          ]
+        },
+        "fase_final": {
+          "summary": "CASO RESOLVIDO: Você cercou o suspeito na Estação Central e encontrou o arqueólogo são e salvo no vagão de carga!",
+          "isFinal": true,
+          "options": []
+        }
+      }
     }
   ]
 }
