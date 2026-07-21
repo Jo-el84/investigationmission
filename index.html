@@ -94,12 +94,40 @@
             line-height: 1.4;
         }
 
-        .objectives-list {
-            list-style-type: square;
-            margin: 5px 0 15px 15px;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
+      .objectives-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 10px 0 15px 0;
+}
+
+.objective-item {
+    background: #252525;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-left: 3px solid #555;
+    transition: background 0.2s;
+}
+
+.objective-item:active {
+    background: #333;
+}
+
+.objective-item.completed {
+    border-left-color: var(--primary-color);
+    color: var(--text-muted);
+    text-decoration: line-through;
+}
+
+.checkbox {
+    font-size: 1.1rem;
+    color: var(--primary-color);
+}
 
         .btn-launch {
             width: 100%;
