@@ -153,6 +153,49 @@
             color: #555;
             cursor: not-allowed;
         }
+        .options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.btn-option {
+    background-color: #252525;
+    color: #e0e0e0;
+    border: 1px solid #444;
+    border-left: 4px solid var(--primary-color);
+    padding: 12px 15px;
+    text-align: left;
+    font-family: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-option:active {
+    background-color: #333;
+    border-color: var(--primary-light);
+}
+
+.btn-reset-step {
+    background: transparent;
+    color: #888;
+    border: 1px dashed #444;
+    padding: 8px;
+    width: 100%;
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.btn-reset-step:hover {
+    color: #e8b4b8;
+    border-color: #e8b4b8;
+}
     </style>
 </head>
 <body>
