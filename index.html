@@ -154,58 +154,69 @@
     <script>
         // Banco de dados embutido (Sem erro de carregamento no celular)
         const GAME_DATA = {
-            missions: [
-                {
-                    id: "missao-01",
-                    title: "O Mistério do Rio",
-                    difficulty: "Médio",
-                    evidenceRequired: 2, // Precisa de pelo menos 2 provas para prender sem ser processado
-                    steps: {
-                        "inicio": {
-                            summary: "Foi encontrado um homem caído na beira do rio. O local está isolado e sob forte tensão.",
-                            image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600",
-                            options: [
-                                { text: "1. Analisar corpo", nextStep: "corpo" },
-                                { text: "2. Analisar cenário", nextStep: "cenario" },
-                                { text: "3. Analisar testemunhas", nextStep: "testemunhas" }
-                            ]
-                        },
-                        "corpo": {
-                            summary: "Você examina o corpo e encontra um bilhete rasgado no bolso da vítima com a assinatura clara do suspeito.",
-                            image: "https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?w=600",
-                            isEvidence: true,
-                            evidenceName: "Bilhete Assinado no Bolso",
-                            options: [
-                                { text: "Voltar a analisar o cenário", nextStep: "cenario" },
-                                { text: "Investigar as testemunhas", nextStep: "testemunhas" },
-                                { text: "Tentar prender o suspeito agora", nextStep: "verificar_acusacao" }
-                            ]
-                        },
-                        "cenario": {
-                            summary: "Pegadas profundas de lama levam direto para um armazém abandonado nas proximidades do rio.",
-                            image: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=600",
-                            isEvidence: true,
-                            evidenceName: "Pegadas de Lama no Armazém",
-                            options: [
-                                { text: "Inspecionar o corpo", nextStep: "corpo" },
-                                { text: "Ouvir as testemunhas", nextStep: "testemunhas" },
-                                { text: "Fazer a acusação final", nextStep: "verificar_acusacao" }
-                            ]
-                        },
-                        "testemunhas": {
-                            summary: "Um morador local relata ter visto uma discussão acalorada na noite anterior, mas não viu o rosto de ninguém.",
-                            image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600",
-                            isEvidence: false,
-                            options: [
-                                { text: "Investigar o corpo", nextStep: "corpo" },
-                                { text: "Examinar melhor o cenário", nextStep: "cenario" },
-                                { text: "Tentar prender o suspeito", nextStep: "verificar_acusacao" }
-                            ]
-                        }
-                    }
+    missions: [
+        {
+            id: "missao-cumbuco",
+            title: "O Mistério da Duna e da Maré",
+            difficulty: "Difícil (Caso Altamente Complexo)",
+            evidenceRequired: 4, // Exige rigor máximo nas provas para não ser incriminado
+            steps: {
+                "inicio": {
+                    summary: "Você é chamado às pressas para uma ocorrência na divisa entre a foz do Rio Cauípe e o mar do Cumbuco, em Caucaia. Um turista que fazia kitesurf encontrou o corpo de uma mulher sobre a areia. Ela veste roupas pesadas de frio (estilo escandinavo), mas o calor do Cumbuco é implacável. Um lenço branco cobre o seu rosto, revelando apenas alguns fios de cabelo loiro. Há um policial local (que atendeu o chamado do turista) acompanhando cada passo seu de perto.",
+                    image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600",
+                    options: [
+                        { text: "1. Examinar o corpo da vítima de perto", nextStep: "examinar_corpo" },
+                        { text: "2. Investigar o cenário e os arredores na areia", nextStep: "examinar_cenario" },
+                        { text: "3. Interrogar o turista que encontrou o corpo", nextStep: "interrogar_turista" }
+                    ]
+                },
+                "examinar_corpo": {
+                    summary: "Ao retirar cuidadosamente o lenço branco, você vê uma mulher sem marcas de sangue, mas com nítidas marcas de enforcamento no pescoço. O corpo está surpreendentemente conservado, sem sinais de decomposição. No bolso do vestido de frio, há uma caneta rara característica do norte da Rússia e a ponta de um bilhete rasgado. Nas unhas dela, há resíduos de pele humana (sinais de luta corporal). Um de seus sapatos de salto alto está sem o salto.",
+                    image: "https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?w=600",
+                    isEvidence: true,
+                    evidenceName: "Unhas com pele do assassino e Caneta Russa",
+                    options: [
+                        { text: "Analisar o cenário do crime na areia", nextStep: "examinar_cenario" },
+                        { text: "Questionar o policial que primeiro chegou ao local", nextStep: "investigar_policial" },
+                        { text: "Tentar concluir o caso agora", nextStep: "verificar_acusacao" }
+                    ]
+                },
+                "examinar_cenario": {
+                    summary: "Perto do corpo, na areia fofa, você acha um pedaço de taça de vidro quebrada e suja de vinho. O policial local se aproxima rapidamente e diz: 'Olha só, detetive... esse turista de kitesurf estava circulando muito perto daqui antes de chamar a gente. Repare que o sapato dele tem resisto de lama fresca e ele parecia nervoso'. O policial tenta sutilmente plantar uma luva do turista perto das evidências.",
+                    image: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=600",
+                    isEvidence: true,
+                    evidenceName: "Taça de vinho quebrada e Pista manipulada",
+                    options: [
+                        { text: "Voltar a examinar o corpo", nextStep: "examinar_corpo" },
+                        { text: "Investigar o histórico do turista e do policial", nextStep: "confrontar_pistas" },
+                        { text: "Fazer a acusação final do assassino", nextStep: "verificar_acusacao" }
+                    ]
+                },
+                "interrogar_turista": {
+                    summary: "O turista jura inocência: 'Eu só andava para ver o vento para o kitesurf! Quando vi o corpo, chamei a polícia imediatamente. Mas notei que o policial que atendeu a ocorrência parecia excessivamente preocupado em mexer nos bolsos da vítima antes de você chegar...'.",
+                    image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600",
+                    isEvidence: true,
+                    evidenceName: "Depoimento do Turista sobre o Policial",
+                    options: [
+                        { text: "Verificar o corpo detalhadamente", nextStep: "examinar_corpo" },
+                        { text: "Investigar a vida da vítima (falsa identidade europeia)", nextStep: "confrontar_pistas" },
+                        { text: "Efetuar a prisão do verdadeiro culpado", nextStep: "verificar_acusacao" }
+                    ]
+                },
+                "confrontar_pistas": {
+                    summary: "Você cruza os dados: a mulher era cearense, mas o namorado político dela (que fingia que ela era da Europa) tinha acesso à senha de um cofre na Suíça. O policial que atende o caso é, na verdade, esse mesmo político disfarçado/comparsa na força pública, que tentou culpar o turista para acobertar o assassinato por cobiça financeira e a senha do banco suíço!",
+                    image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600",
+                    isEvidence: true,
+                    evidenceName: "Dossiê do Policial Corrupto e Cofre Suíço",
+                    options: [
+                        { text: "Prender o Policial Corrupto agora com todas as provas", nextStep: "verificar_acusacao" }
+                    ]
                 }
-            ]
-        };
+            }
+        }
+    ]
+};
+
 
         document.addEventListener("DOMContentLoaded", () => {
             loadGame();
